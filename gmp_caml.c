@@ -610,40 +610,13 @@ void camlidl_custom_gmp_randstate_finalize(value val)
   gmp_randclear(gmp_randstate);
 }
 
-/* Serialization for gmp_randstate_t */
-/* Note: This is a simplified implementation since GMP doesn't provide direct serialization */
-void camlidl_custom_gmp_randstate_serialize(value val, uintnat *wsize_32, uintnat *wsize_64)
-{
-  /* We can't serialize the exact internal state, so we'll use a marker */
-  /* to indicate that this is a random state that needs to be re-initialized */
-  uint32_t marker = 0xDEADBEEF;
-  caml_serialize_int_4(marker);
-  
-  *wsize_32 = sizeof(__gmp_randstate_struct);
-  *wsize_64 = sizeof(__gmp_randstate_struct);
-}
-
-uintnat camlidl_custom_gmp_randstate_deserialize(void *dst)
-{
-  uint32_t marker = caml_deserialize_uint_4();
-  
-  /* Initialize a new random state with default algorithm */
-  __gmp_randstate_struct* gmp_randstate = (__gmp_randstate_struct*)dst;
-  gmp_randinit_default(gmp_randstate);
-  
-  /* Use the marker as a seed to at least make it deterministic */
-  gmp_randseed_ui(gmp_randstate, marker);
-  
-  return sizeof(__gmp_randstate_struct);
-}
-
 struct custom_operations camlidl_custom_gmp_randstate = {
   "camlidl_gmp_custom_randstate",
   &camlidl_custom_gmp_randstate_finalize,
   custom_compare_default,
   custom_hash_default,
-  &camlidl_custom_gmp_randstate_serialize,
-  &camlidl_custom_gmp_randstate_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -737,8 +710,8 @@ struct custom_operations camlidl_custom_mpz2 = {
   &camlidl_custom_mpz2_finalize,
   &camlidl_custom_mpz2_compare,
   &camlidl_custom_mpz2_hash,
-  &camlidl_custom_mpz2_serialize,
-  &camlidl_custom_mpz2_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -832,8 +805,8 @@ struct custom_operations camlidl_custom_mpq2 = {
   &camlidl_custom_mpq2_finalize,
   &camlidl_custom_mpq2_compare,
   &camlidl_custom_mpq2_hash,
-  &camlidl_custom_mpq2_serialize,
-  &camlidl_custom_mpq2_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -898,8 +871,8 @@ struct custom_operations camlidl_custom_gmp_randstate2 = {
   &camlidl_custom_gmp_randstate2_finalize,
   custom_compare_default,
   custom_hash_default,
-  &camlidl_custom_gmp_randstate2_serialize,
-  &camlidl_custom_gmp_randstate2_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -930,7 +903,5 @@ CAMLprim value mlgmpidl_init_custom_ops(value unit)
   caml_register_custom_operations(&camlidl_custom_mpq);
   caml_register_custom_operations(&camlidl_custom_mpf);
   caml_register_custom_operations(&camlidl_custom_mpfr);
-  caml_register_custom_operations(&camlidl_custom_gmp_randstate);
-  // TODO: register missing ones
   CAMLreturn(Val_unit);
 }
