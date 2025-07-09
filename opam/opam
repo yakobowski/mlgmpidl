@@ -14,7 +14,7 @@ install: [
 ]
 depends: [
   "ocamlfind" {build & >= "1.5.6"}
-  "camlidl"
+  "camlidl" {>= "1.10"}
   "conf-gmp"
   "conf-mpfr"
   "conf-perl" {build}
