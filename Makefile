@@ -195,7 +195,7 @@ uninstall:
 	$(OCAMLFIND) remove $(PKG-NAME)
 endif
 
-clean:
+clean: test-clean
 	$(RM) -r tmp html
 	$(RM) gmprun gmptop
 	$(RM) *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
@@ -243,6 +243,27 @@ homepage: html mlgmpidl.pdf
 	scp -r index.html html mlgmpidl.pdf \
 		salgado:/home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
 	ssh salgado chmod -R ugoa+rx /home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
+
+#--------------------------------------------------------------
+# TESTS
+#--------------------------------------------------------------
+
+# Run all tests
+test: byte opt test/test_serialization.byte test/test_serialization.opt
+	@echo "Running native serialization tests..."
+	@cd test && ./test_serialization.opt
+	@cd test && ./test_serialization.byte
+
+test/test_serialization.byte: test/test_serialization.ml gmp.cma Makefile
+	ocamlc -verbose -I .  -o $@ gmp.cma $<
+
+test/test_serialization.opt: test/test_serialization.ml gmp.cmxa Makefile
+	ocamlopt -verbose -I .  -o $@ gmp.cmxa $<
+
+
+# Clean test executables
+test-clean:
+	$(RM) test/*.byte test/*.opt test/*.cm* test/*.o
 
 #--------------------------------------------------------------
 # IMPLICIT RULES AND DEPENDENCIES
