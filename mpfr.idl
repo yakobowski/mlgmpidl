@@ -232,7 +232,14 @@ int mpfr_rootn_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_
   quote(call, "  _res = mpfr_root (ROP, OP1, OP2, RND);");
 quote(MLI,"[@@ocaml.deprecated \"Binds to `mpfr_root', which is not IEEE 754-2008 compliant and is deprecated as of MPFR version 4.  You should upgrade MPFR, and use `Mpfr.rootn_ui' instead.\"]");
 #endif
+quote(C, "\
+#pragma GCC diagnostic push\n\
+#pragma GCC diagnostic ignored \"-Wdeprecated-declarations\"\n\
+")
 int mpfr_root (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
+quote(C, "\n\
+#pragma GCC diagnostic pop\n\
+")
 
 quote(MLMLI,"\n(** {2 Comparison Functions} *)")
 quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Comparison-Functions}C documentation} *)\n")
