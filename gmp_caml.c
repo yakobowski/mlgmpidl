@@ -642,8 +642,8 @@ struct custom_operations camlidl_custom_gmp_randstate = {
   &camlidl_custom_gmp_randstate_finalize,
   custom_compare_default,
   custom_hash_default,
-  &camlidl_custom_gmp_randstate_serialize,
-  &camlidl_custom_gmp_randstate_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -737,8 +737,8 @@ struct custom_operations camlidl_custom_mpz2 = {
   &camlidl_custom_mpz2_finalize,
   &camlidl_custom_mpz2_compare,
   &camlidl_custom_mpz2_hash,
-  &camlidl_custom_mpz2_serialize,
-  &camlidl_custom_mpz2_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -832,8 +832,8 @@ struct custom_operations camlidl_custom_mpq2 = {
   &camlidl_custom_mpq2_finalize,
   &camlidl_custom_mpq2_compare,
   &camlidl_custom_mpq2_hash,
-  &camlidl_custom_mpq2_serialize,
-  &camlidl_custom_mpq2_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -898,8 +898,8 @@ struct custom_operations camlidl_custom_gmp_randstate2 = {
   &camlidl_custom_gmp_randstate2_finalize,
   custom_compare_default,
   custom_hash_default,
-  &camlidl_custom_gmp_randstate2_serialize,
-  &camlidl_custom_gmp_randstate2_deserialize,
+  custom_serialize_default,
+  custom_deserialize_default,
   custom_compare_ext_default,
 #if OCAML_VERSION >= 40800
   custom_fixed_length_default
@@ -930,7 +930,5 @@ CAMLprim value mlgmpidl_init_custom_ops(value unit)
   caml_register_custom_operations(&camlidl_custom_mpq);
   caml_register_custom_operations(&camlidl_custom_mpf);
   caml_register_custom_operations(&camlidl_custom_mpfr);
-  caml_register_custom_operations(&camlidl_custom_gmp_randstate);
-  // TODO: register missing ones
   CAMLreturn(Val_unit);
 }

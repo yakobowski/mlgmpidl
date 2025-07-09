@@ -87,32 +87,6 @@ let test_mpfr () =
   test_mpfr_aux f2
 
 
-let test_gmp_random () =
-  print_endline "Testing Gmp_random serialization...";
-  let rng = Gmp_random.init_default () in
-  Gmp_random.seed_ui rng 42;
-  
-  (* Generate a random number *)
-  let z1 = Mpz.init () in
-  Gmp_random.Mpz.urandomb z1 rng 32;
-  let before_serialize = Mpz.to_string z1 in
-  
-  (* Serialize to string *)
-  let serialized = Marshal.to_string rng [] in
-  
-  (* Deserialize from string *)
-  let rng2 = Marshal.from_string serialized 0 in
-  
-  (* Generate another random number *)
-  let z2 = Mpz.init () in
-  Gmp_random.Mpz.urandomb z2 rng2 32;
-  let after_deserialize = Mpz.to_string z2 in
-  
-  printf "Before serialize: %s\n" before_serialize;
-  printf "After deserialize: %s\n" after_deserialize;
-  printf "Note: These may differ due to random state limitations\n";
-  print_endline ""
-
 let () =
   print_endline "Performing registration...";
   internal_init_custom_ops ();
@@ -124,6 +98,5 @@ let () =
   test_mpq ();
   test_mpf ();
   test_mpfr ();
-  test_gmp_random ();
   
   print_endline "All tests completed!"
