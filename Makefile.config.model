@@ -72,7 +72,7 @@ CAMLIDL = camlidl
 CFLAGS = \
 -Wcast-qual -Wswitch -Werror-implicit-function-declaration \
 -Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
--Wno-unused \
+-Wno-unused -Wno-misleading-indentation \
 -fPIC \
 -std=c99 \
 -O3 -DNDEBUG
@@ -82,7 +82,7 @@ CFLAGS = \
 CFLAGS_DEBUG = \
 -Wcast-qual -Wswitch -Werror-implicit-function-declaration \
 -Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
--Wno-unused \
+-Wno-unused -Wno-misleading-indentation \
 -fPIC \
 -std=c99 \
 -g -O0 -UNDEBUG
@@ -91,7 +91,7 @@ CFLAGS_DEBUG = \
 CFLAGS_PROF = \
 -Wcast-qual -Wswitch -Werror-implicit-function-declaration \
 -Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
--Wno-unused \
+-Wno-unused -Wno-misleading-indentation \
 -std=c99 \
 -fPIC -O3 -DNDEBUG -g -pg
 

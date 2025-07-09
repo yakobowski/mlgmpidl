@@ -246,7 +246,7 @@ checkdirinpath()
 # tests
 #######
 
-c_flags="-Wcast-qual -Wswitch -Wall -Wextra -Wundef -Wcast-align -Wno-unused -Wno-unused-parameter -Wno-unused-function -fPIC"
+c_flags="-Wcast-qual -Wswitch -Wall -Wextra -Wundef -Wcast-align -Wno-unused -Wno-unused-parameter -Wno-unused-function -Wno-misleading-indentation -fPIC"
 
 
 # C compiler
