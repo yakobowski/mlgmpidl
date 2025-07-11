@@ -78,13 +78,25 @@ let test_mpfr_aux f =
   print_endline ""
 
 let test_mpfr () =
-  let f1 = Mpfr.init () in
-  Mpfr.set_str f1 "2.71828182845904523536" ~base:10 Mpfr.Near;
-  test_mpfr_aux f1;
+  let aux_str ?prec s =
+    let f = match prec with
+    | None -> Mpfr.init ()
+    | Some prec -> Mpfr.init2 prec
+    in
+    Mpfr.set_str f s ~base:10 Mpfr.Near;
+    test_mpfr_aux f
+  in
 
-  let f2 = Mpfr.init2 200 in
-  Mpfr.set_str f2 "2718281828459045235360000000000000000000000000000000000000" ~base:10 Mpfr.Near;
-  test_mpfr_aux f2
+  aux_str "2.71828182845904523536";
+  aux_str ~prec:200 "-2718281828459045235360000000000000000000000000000000000000";
+  aux_str ~prec:200 "0.00000000000000000000000000000000000000000000000000000000000000000001";
+  aux_str ~prec:20 "0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+  aux_str "0";
+  aux_str "-0";
+  aux_str "nan";
+  aux_str "inf";
+  aux_str "-inf";
+;;
 
 
 let () =

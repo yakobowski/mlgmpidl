@@ -524,9 +524,11 @@ void camlidl_custom_mpfr_serialize(value val, uintnat *wsize_32, uintnat *wsize_
 
   mpfr_sign_t sign = mpfr->_mpfr_sign;
   DEBUG_SERIAL_PRINTF("DEBUG: mpfr sign = %d, %ld\n", sign, sizeof(mpfr_sign_t));
-  if ((sign != 0) && (sign != 1))
+  // The sign is saved on 4 bytes. We compress it into only 1, so make sure
+  // the values are the expected ones.
+  if ((sign != -1) && (sign != 0) && (sign != 1))
     caml_deserialize_error("wrong value for sign");
-  caml_serialize_int_1((unsigned char)sign);
+  caml_serialize_int_1((signed char)sign);
   
   mpfr_exp_t  exp = mpfr->_mpfr_exp;
   DEBUG_SERIAL_PRINTF("DEBUG: mpfr exp = %lld, %ld\n", (long long)exp, sizeof(mpfr_exp_t));
@@ -557,8 +559,13 @@ uintnat camlidl_custom_mpfr_deserialize(void *dst)
   uint64_t prec = caml_deserialize_uint_8();
 
   mpfr_init2(x, prec);
-  
-  x->_mpfr_sign = caml_deserialize_uint_1();
+
+  // We use a smaller type for the sign to save space, so make sure to
+  // to preserve the sign when casting it back. (By doing the computation
+  // on a signed typed).
+  signed char sign = caml_deserialize_sint_1();
+  x->_mpfr_sign = (mpfr_sign_t)(sign);
+
   x->_mpfr_exp = caml_deserialize_sint_8();
 
   int nb_limbs = (prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS;
