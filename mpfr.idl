@@ -410,3 +410,6 @@ quote(ML,"let of_mpq x r = snd (init_set_q x r)")
 quote(ML,"let of_string x r = init_set_str x ~base:10 r")
 quote(ML,"let of_frac n d r = let mpq = Mpq.of_frac n d in of_mpq mpq r")
 quote(ML,"let of_mpz2 n d r = let mpq = Mpq.of_mpz2 n d in of_mpq mpq r")
+
+quote(ML,"external _init_serialization : unit -> unit = \"mlgmpidl_init_custom_ops\"")
+quote(ML,"let () = _init_serialization ()")

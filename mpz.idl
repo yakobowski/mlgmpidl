@@ -315,3 +315,6 @@ boolean mpz_fits_uint_p (mpz_ptr OP);
 boolean mpz_fits_sint_p (mpz_ptr OP);
 boolean mpz_fits_ushort_p (mpz_ptr OP);
 boolean mpz_fits_sshort_p (mpz_ptr OP);
+
+quote(ML,"external _init_serialization : unit -> unit = \"mlgmpidl_init_custom_ops\"")
+quote(ML,"let () = _init_serialization ()")

@@ -186,3 +186,6 @@ if s=\"\" \n\
 then Format.pp_print_string fmt \"0.0\" \n\
 else Format.fprintf fmt \"0.%se%i\" s e \n\
 ")
+
+quote(ML,"external _init_serialization : unit -> unit = \"mlgmpidl_init_custom_ops\"")
+quote(ML,"let () = _init_serialization ()")

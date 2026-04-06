@@ -262,3 +262,6 @@ quote(ML,"let of_int a = init_set_si a 1")
 quote(ML,"let of_frac = init_set_si")
 quote(ML,"let of_mpz = init_set_z")
 quote(ML,"let of_mpz2 num den = let res = init() in set_num res num; set_den res den; canonicalize res; _gen res")
+
+quote(ML,"external _init_serialization : unit -> unit = \"mlgmpidl_init_custom_ops\"")
+quote(ML,"let () = _init_serialization ()")
