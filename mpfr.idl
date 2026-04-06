@@ -344,10 +344,8 @@ signed int mpfr__sprintf(char *s, const char * s2, mpfr_rnd_t r, mpfr_ptr x){\n\
   return mpfr_sprintf(s,s2,r, x);\n\
 }\n\
 ")
-quote(MLI,"[@@ocaml.deprecated \"Breaks safe strings assumption\"]");
-signed int mpfr__sprintf ([string]char *STR, [string]const char *TEMPLATE, mpfr_rnd_t RND, mpfr_ptr OP);
-quote(MLI,"[@@ocaml.deprecated \"Breaks safe strings assumption\"]");
-quote(MLI,"val sprintf : buf:string -> template:string -> mpfr_rnd_t -> 'a tt -> int\n\
+signed int mpfr__sprintf ([bytes]char *STR, [string]const char *TEMPLATE, mpfr_rnd_t RND, mpfr_ptr OP);
+quote(MLI,"val sprintf : buf:bytes -> template:string -> mpfr_rnd_t -> 'a tt -> int\n\
   (** Call sprintf with the given format string and arguments. The format string must\n\
       contain exactly one conversion specification, which must be of [mpfr_t] type and\n\
       must take a rounding mode argument (i.e., it must use the '*' rounding specifier),\n\
