@@ -35,7 +35,7 @@ OCAMLCCOPT += \
 $(if $(GMP_PREFIX),-ccopt -L$(GMP_PREFIX)/lib) \
 $(if $(MPFR_PREFIX),-ccopt -L$(MPFR_PREFIX)/lib) \
 
-LIBS = -lmpfr -lgmp -lcamlidl
+LIBS = -lmpfr -lgmp -lcamlidl $(EXTRA_LIBS)
 OCAMLLDFLAGS = $(OCAMLCCOPT) $(addprefix -cclib ,$(LIBS))
 
 IDLMODULES = mpz mpq mpf mpfr gmp_random

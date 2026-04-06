@@ -1,0 +1,66 @@
+name: Build and test
+
+on:
+  - push
+  - pull_request
+
+permissions: read-all
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        ocaml-compiler:
+          - "4.14"
+          - "5"
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v6
+
+      - name: Set-up OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          # We use ./configure && make, not opam-based building
+          opam-pin: false
+
+      - name: Install dependencies
+        run: opam install . --deps-only
+
+      - name: Install mingw64 MPFR (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          C:/.opam/.cygwin/setup-x86_64.exe \
+            --root "C:\\.opam\\.cygwin\\root" \
+            --quiet-mode noinput --no-shortcuts --no-startmenu --no-desktop \
+            --no-admin --no-version-check --no-write-registry \
+            --packages mingw64-x86_64-mpfr \
+            --symlink-type native --upgrade-also --only-site \
+            --site "https://cygwin.mirror.constant.com/" \
+            --local-package-dir "C:\\.opam\\.cygwin\\cache"
+
+      - name: Configure
+        if: runner.os != 'Windows'
+        run: opam exec -- bash ./configure
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          MINGW_SYSROOT=/usr/x86_64-w64-mingw32/sys-root/mingw
+          ARGS="-gmp-prefix $(cygpath -m $MINGW_SYSROOT) -mpfr-prefix $(cygpath -m $MINGW_SYSROOT)"
+          opam exec -- bash ./configure $ARGS
+
+      - name: Build
+        run: opam exec -- make
+
+      - name: Test
+        run: opam exec -- make test

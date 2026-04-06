@@ -294,7 +294,8 @@ mpfr_cflags=""
 test "x$mpfr_prefix" != "x" && mpfr_cflags="-I$mpfr_prefix/include";
 mpfr_version_major=$( echo MPFR_VERSION_MAJOR \
 			  | "$cc" $mpfr_cflags -imacros mpfr.h -E -P - \
-			  | "$grep" '[^[:blank:]]' )
+			  | tr -d '\r' \
+			  | "$grep" -E '^[0-9]+$' )
 echo "library mpfr major version: $mpfr_version_major"
 
 # OCaml environment
@@ -374,14 +375,14 @@ then
 	    echo "only available up to OCaml 4.08.0 (<= ${overs})";
 	    enable_prof=0;;
 	*)
-	    ocaml_prof="$($ocamlc -config | $sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
+	    ocaml_prof="$($ocamlc -config | tr -d '\r' | $sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
 	    if test -n "$ocaml_prof" -a "$ocaml_prof" = "false"
 	    then
 		echo "not supported"
 		enable_prof=0
 	    else
 		echo "supported"
-		cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
+		cprof_flags="$($ocamlc -config | tr -d '\r' | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
 		if test "x${cprof_flags}" != "x"
 		then
 		    echo "profiling flags provided by the ocaml system: ${cprof_flags}"
@@ -395,9 +396,18 @@ fi
 # Extension for dynamic libraries
 ext_dll="";
 echo -n "finding extension for dynamic libraries: "
-ext_dll="$($ocamlc -config | $sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
+ext_dll="$($ocamlc -config | tr -d '\r' | $sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
 echo $ext_dll
 
+# Detect Windows (mingw) via OCaml's os_type
+os_type="$($ocamlc -config | tr -d '\r' | $sed -e '/^os_type:/!d; s/^[^:]*: *//;')"
+echo "os_type: $os_type"
+extra_libs=""
+if test "x$os_type" = "xWin32"
+then
+    extra_libs="-lole32"
+    echo "adding extra libraries for Windows: $extra_libs"
+fi
 
 # Use abolute dynamic library names under OSX when explicitly asked,
 # or when the installation prefix does not belong to DYLD_LIBRARY_PATH
@@ -507,6 +517,7 @@ MAKEINDEX = makeindex
 RM ?= rm -f
 
 HAS_NATIVE_PLUGINS = $has_native_plugins
+EXTRA_LIBS = $extra_libs
 
 # OSX only:
 ABSOLUTE_DYLIB_INSTALL_NAMES = $absolute_dylib_install_names
