@@ -8,6 +8,7 @@ license: "LGPL-2.1 with static linking exception"
 build: [
   ["sh" "./configure" "--absolute-dylibs" {os = "macos"} ]
   [make]
+  [make "test"] {with-test}
 ]
 install: [
   [make "install"]

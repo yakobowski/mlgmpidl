@@ -195,7 +195,7 @@ uninstall:
 	$(OCAMLFIND) remove $(PKG-NAME)
 endif
 
-clean:
+clean: test-clean
 	$(RM) -r tmp html
 	$(RM) gmprun gmptop
 	$(RM) *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
@@ -243,6 +243,46 @@ homepage: html mlgmpidl.pdf
 	scp -r index.html html mlgmpidl.pdf \
 		salgado:/home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
 	ssh salgado chmod -R ugoa+rx /home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
+
+#--------------------------------------------------------------
+# TESTS
+#--------------------------------------------------------------
+
+# Run all tests
+test-bytecode: byte test/test_serialization.byte
+	@echo "Running serialization tests (bytecode)..."
+	@./test/test_serialization.byte
+
+VALGRIND := $(shell command -v valgrind 2>/dev/null)
+VALGRIND_FLAGS = --leak-check=full --error-exitcode=1 \
+  --errors-for-leak-kinds=definite,possible \
+  --suppressions=test/mlgmpidl.supp
+ifeq ($(VALGRIND_VERBOSE),)
+  VALGRIND_FLAGS += -q
+endif
+
+test-native: opt test/test_serialization.opt
+	@echo "Running serialization tests (native)..."
+	@./test/test_serialization.opt
+ifneq ($(VALGRIND),)
+	@echo "Running serialization tests under valgrind..."
+	@$(VALGRIND) $(VALGRIND_FLAGS) ./test/test_serialization.opt \
+	  || { echo "Valgrind detected errors. Re-run with 'make test-native VALGRIND_VERBOSE=1' for details."; exit 1; }
+endif
+
+test: test-bytecode test-native
+
+test/test_serialization.byte: test/test_serialization.ml gmp.cma $(CCLIB)
+	$(OCAMLC) $(OCAMLFLAGS) -I . -custom -o $@ gmp.cma $< \
+	-cclib -lgmp_caml $(OCAMLLDFLAGS)
+
+test/test_serialization.opt: test/test_serialization.ml gmp.cmxa $(CCLIB)
+	$(OCAMLOPT) -I . -cclib -L. -o $@ gmp.cmxa $<
+
+
+# Clean test executables
+test-clean:
+	$(RM) test/*.byte test/*.opt test/*.cm* test/*.o
 
 #--------------------------------------------------------------
 # IMPLICIT RULES AND DEPENDENCIES

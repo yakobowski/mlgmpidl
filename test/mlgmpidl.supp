@@ -1,0 +1,38 @@
+# Valgrind suppressions for mlgmpidl
+#
+# The custom operations for mpz, mpq, mpf and mpfr are registered once
+# at module-init time via caml_register_custom_operations and are never
+# freed (process-lifetime allocations).
+
+{
+   mlgmpidl_register_custom_ops
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:caml_stat_alloc_noexc
+   fun:caml_stat_alloc
+   fun:caml_register_custom_operations
+   fun:mlgmpidl_init_custom_ops
+}
+
+# OCaml runtime allocations reported as "possibly lost" because
+# caml_stat_alloc_aligned_noexc over-allocates for alignment, making
+# the returned pointer differ from the original malloc pointer.
+
+{
+   ocaml_atom_table
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:caml_stat_alloc_aligned_noexc
+   fun:caml_init_atom_table
+}
+
+{
+   ocaml_heap_chunk
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:caml_stat_alloc_aligned_noexc
+   fun:caml_alloc_for_heap
+}
