@@ -49,7 +49,7 @@ jobs:
 
       - name: Configure
         if: runner.os != 'Windows'
-        run: opam exec -- bash ./configure
+        run: opam exec -- ./configure
 
       - name: Configure (Windows)
         if: runner.os == 'Windows'
